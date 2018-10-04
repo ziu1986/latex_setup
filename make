@@ -5,10 +5,14 @@ function findMain {
         if([ ! ${1} ]); then
             echo "Provide base file name."
             read file
+            if [[ ${file}=="" ]]; then
+                echo "Assuming file:"
+                file=`grep -lr --include="*.tex" "begin{document}" .`
+            fi
         fi
      fi
      if([ ! -e $file ]); then
-         echo "$file does not exist!"
+         echo "$File does not exist!"
          exit 1
      fi
     echo "==> $file"
