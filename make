@@ -81,43 +81,46 @@ function makePic {
     fi
     updatedPics=0;
     for i in `ls $path | xargs`; do
-        oldFile=${i}
-        if ([ "$oldFile" != "${oldFile/%eps}" ]); then
+        srcFile=${i}
+        if ([ "$srcFile" != "${srcFile/%eps}" ]); then
             # Deal with eps
-            targetFile=$targetPath/`basename $oldFile .eps`.pdf
+            targetFile=$targetPath/`basename $srcFile .eps`.pdf
             if [[ -e $targetFile ]]; then
-                if [ $(stat -c '%Z' $path/$oldFile) -gt  $(stat -c '%Z' $targetFile) ]; then
+                if [ $(stat -c '%Z' $path/$srcFile) -gt  $(stat -c '%Z' $targetFile) ]; then
                     rm $targetFile
                 fi
             fi
             if [[ ! -e $targetFile ]]; then
                 #echo $targetFile
-                `epstopdf $path/$oldFile`
-                echo "Converted $oldFile to eps."
+                `epstopdf $path/$srcFile`
+                echo "Converted $srcFile to eps."
                 mv $path/`basename $targetFile` $targetPath
                 echo "Moved `basename $targetFile` to $targetPath."
                 updatedPics=$(($updatedPics + 1))
             fi
         fi
-        if ([ "$oldFile" != "${oldFile/%svg}" ]); then
+        if ([ "$srcFile" != "${srcFile/%svg}" ]); then
             # Deal with svg
-            targetFile=$targetPath/`basename $oldFile .svg`.pdf
+            targetFile=$targetPath/`basename $srcFile .svg`.pdf
             if [[ -e $targetFile ]]; then
-                if [ $(stat -c '%Z' $path/$oldFile) -gt  $(stat -c '%Z' $targetFile) ]; then
+                if [ $(stat -c '%Z' $path/$srcFile) -gt  $(stat -c '%Z' $targetFile) ]; then
                rm $targetFile
                 fi
             fi
             if [[ ! -e $targetFile ]]; then
-                `inkscape -z --file=$path/$oldFile --export-pdf=$targetFile` 
+                `inkscape -z --file=$path/$srcFile --export-pdf=$targetFile` 
                 echo "Created `basename $targetFile`"  
                 updatedPics=$(($updatedPics + 1))
             fi
         else
             # Deal with pdf and png...
-            targetFile=$targetPath/$oldFile
-            if( [ ! -e $targetFile ] || [ $(stat -c '%Z' $path/$oldFile) -gt  $(stat -c '%Z' $targetFile) ]); then
-                ln -s $path/$oldFile $targetPath
-                echo "Created symbolic link from $oldFile to $targetPath."
+            targetFile=$targetPath/$srcFile
+            if( [ ! -e $targetFile ] || [ $(stat -c '%Z' $path/$srcFile) -gt  $(stat -c '%Z' $targetFile) ]); then
+                # Don't know why, but link needs to be realative.
+                cd $targetPath
+                ln -s "../$path/$srcFile" $srcFile
+                echo "Created symbolic link for $srcFile in $targetPath."
+                cd ..
                 updatedPics=$(($updatedPics + 1))
             fi
         fi
@@ -132,7 +135,11 @@ function makeClean {
     if([ ! $file ]); then
         if([ ! ${1} ]); then
             echo "Provide base file name."
-            exit
+            read file
+            if [[ ${file}=="" ]]; then
+                file=`grep -lr --include="*.tex" "begin{document}" .`
+                echo "Assuming file: ${file}"
+            fi
         else
             file=`basename ${1} .tex`
         fi
