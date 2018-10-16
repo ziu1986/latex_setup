@@ -5,7 +5,8 @@ function findMain {
         if([ ! ${1} ]); then
             echo "Provide base file name."
             read file
-            if [[ ${file}=="" ]]; then
+            echo $file
+            if [[ -z ${file} ]]; then
                 echo "Assuming file:"
                 file=`grep -lr --include="*.tex" "begin{document}" .`
             fi
@@ -54,18 +55,18 @@ function findUpToDate {
 }
 
 function makeBib {
-    if [ `grep -c --exclude=*.sh "LaTeX Warning: There were undefined references." $file.${suffix[1]}` -gt 0 ] || [ -e $file.${suffix[2]} ] ; then
+    if ([ `grep -c --exclude=*.sh "LaTeX Warning: There were undefined references." $file.${suffix[1]}` -gt 0 ] || [ -e $file.${suffix[2]} ]) ; then
         bibtex $file.${suffix[4]}
         pdflatex $directory/$file.${suffix[0]}
         #pdflatex $directory/$file.${suffix[0]}
     fi
-    if [ `grep -c --exclude=*.sh "LaTeX Warning: Label(s) may have changed." $file.${suffix[1]}` -gt 0 ]; then
+    if ([ `grep -c --exclude=*.sh "LaTeX Warning: Label(s) may have changed." $file.${suffix[1]}` -gt 0 ]); then
         pdflatex $directory/$file.${suffix[0]}
     fi
 }
 
 function makeLineno {
-    if [ `grep -c --exclude=*.sh "Package lineno Warning: Linenumber reference failed" $file.${suffix[1]}` -gt 0 ] || [ -e $file.${suffix[2]} ] ; then
+    if ([ `grep -c --exclude=*.sh "Package lineno Warning: Linenumber reference failed" $file.${suffix[1]}` -gt 0 ] || [ -e $file.${suffix[2]} ]) ; then
         pdflatex $directory/$file.${suffix[0]}
     fi
 }
@@ -186,7 +187,7 @@ function spellCheck {
 
 function compress {
     compressedFile="$file-compressed.${suffix[3]}"
-    if [ -f $file.${suffix[3]} ]; then
+    if ([ -f $file.${suffix[3]} ]); then
         `gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dNOPAUSE -dQUIET -dBATCH -sOutputFile=$compressedFile $file.${suffix[3]}`
     fi
 }
@@ -195,7 +196,7 @@ function getWarnings {
     WARNINGS=`grep -c "[W/w]arning" $file.${suffix[1]}`
     echo "++++"
     echo "There occurred $WARNINGS warning(s):"
-    if [ $WARNINGS -le 10 ]; then
+    if ([ $WARNINGS -le 10 ]); then
         grep -s -n --color "[W/w]arning" $file.${suffix[1]}
     fi
     echo "++++"
@@ -212,7 +213,7 @@ function getOverFlow {
     OVERWARNINGS=`grep -c "[o,O]verfull" $file.${suffix[1]}`
     echo "++++"
     echo "There occurred $OVERWARNINGS box overflow(s)."
-    if [ $OVERWARNINGS -le 10 ]; then
+    if ([ $OVERWARNINGS -le 10 ]); then
         grep -s -n --color "[o,O]verfull" $file.${suffix[1]}
     fi
     echo "++++"
@@ -222,7 +223,7 @@ function getUnderFlow {
     UNDERWARNINGS=`grep -c "[u,U]nderfull" $file.${suffix[1]}`
     echo "++++"
     echo "There occurred $UNDERWARNINGS box underflow(s)."
-    if [ $UNDERWARNINGS -le 10 ]; then
+    if ([ $UNDERWARNINGS -le 10 ]); then
         grep -s -n --color "[u,U]nderfull" $file.${suffix[1]}
     fi
     echo "++++"
