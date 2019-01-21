@@ -133,23 +133,9 @@ function makePic {
 function makeClean {
     echo "Clean directory."
 
-    if([ ! $file ]); then
-        if([ ! ${1} ]); then
-            echo "Provide base file name."
-            read file
-            if [[ ${file}=="" ]]; then
-                file=`grep -lr --include="*.tex" "begin{document}" .`
-                echo "Assuming file: ${file}"
-            fi
-        else
-            file=`basename ${1} .tex`
-        fi
-    fi
     for i in ${clear_suff[@]}; do
-        if [[ -e ${file}.${i} ]]; then
-            echo "Remove ${file}.${i}."
-            rm  ${file}.${i}
-        fi 
+        echo "Remove ${file}.${i}."
+        rm  *.${i} 
     done
     if([ -d pictures ]); then
         rm -r pictures
