@@ -3,7 +3,7 @@
 function findMain {
      if([ ! $file ]); then
         if([ ! ${1} ]); then
-            echo "Provide base file name."
+            echo "Provide base file name or press ENTER."
             read file
             echo $file
             if [[ -z ${file} ]]; then
@@ -232,7 +232,8 @@ function makeReview {
     pdfseparate -f 1 -l 1 ${file}.${suffix[3]} ${file}_abstract.${suffix[3]}
     zip figures -xi fig*
 }
-###Script###
+
+### MAIN ###
 
 suffix=( tex log bib pdf aux )
 pic_suff=( pdf jpg jpeg png bmp tiff pnm )
