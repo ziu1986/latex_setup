@@ -1,4 +1,10 @@
 #!/bin/bash
+# Script to compile latex documents which has to be seperated in one main document and dependend sections in different files.
+# Figures are expected in a directory pictures_src.
+# Original graphics in vector formates will be converted into pdf and moved to pictures directory.
+# Graphics in pdf or bitmap formats will be linked into a directory pictures.
+# The compiled document will automatically opened with okular if installed.
+# There is also an option to compress the file.
 # Function declarations
 function findMain {
      if([ ! $file ]); then
