@@ -77,6 +77,13 @@ function makeBib {
     fi
 }
 
+function makeGlossaries {
+    if [[ `grep -c --exclude=*.sh "glossaries" $file.${suffix[0]}`> 0 ]]; then
+            makeglossaries $file
+            pdflatex $directory/$file.${suffix[0]}
+    fi
+}
+
 function makeLineno {
     if ([ `grep -c --exclude=*.sh "Package lineno Warning: Linenumber reference failed" $file.${suffix[1]}` -gt 0 ] || [ -e $file.${suffix[2]} ]) ; then
         pdflatex $directory/$file.${suffix[0]}
@@ -249,7 +256,7 @@ function makeReview {
 
 suffix=( tex log bib pdf aux )
 pic_suff=( pdf jpg jpeg png bmp tiff pnm )
-clear_suff=( aux bbl blg out log pdf toc )
+clear_suff=( acn acr alg aux bbl bcf blg glg glo gls glsdefs ist run.xml out log toc )
 directory=`pwd`
 options=( "open" "clean" "check" "pic" "compress" "copy" "review")
 
@@ -260,6 +267,7 @@ case ${1} in
         findUpToDate $updatedPics
         pdflatex -halt-on-error $directory/$file.${suffix[0]}
         makeBib
+        makeGlossaries
         makeLineno
         getWarnings
         getOverFlow
