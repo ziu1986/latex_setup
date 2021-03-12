@@ -15,7 +15,7 @@
 **.gls
 **.glsdefs
 **.ist
-
+**.sh
 0
 /*.pdf
 # Ignore all "picture" subdirectories in Papers
