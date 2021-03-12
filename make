@@ -266,8 +266,8 @@ case ${1} in
         makePic
         findUpToDate $updatedPics
         pdflatex -halt-on-error $directory/$file.${suffix[0]}
-        makeBib
         makeGlossaries
+        makeBib
         makeLineno
         getWarnings
         getOverFlow
