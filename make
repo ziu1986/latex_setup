@@ -24,7 +24,8 @@ function findMain {
      fi
     echo "==> $file"
     file=`basename $file .tex `
-    bib_file=`find . -name *.bib`
+    bib_file=`find . -name "*.bib"`
+    ln -s $bib_file .
 }
 
 function findUpToDate {
@@ -61,12 +62,13 @@ function findUpToDate {
 }
 
 function makeBib {
+    
     if ([ `grep -c --exclude=*.sh "LaTeX Warning: There were undefined references." $file.${suffix[1]}` > 0 ] || [ -e $file.${suffix[2]} ]) ; then
         if [[ `grep -c --exclude=*.sh "biber" $file.${suffix[0]}`> 0 ]]; then
             biber $file
             pdflatex $directory/$file.${suffix[0]}
         else
-            bibtex $file.${suffix[4]}
+            bibtex $bib_file
         fi
         pdflatex $directory/$file.${suffix[0]}
     fi
