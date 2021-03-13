@@ -25,7 +25,9 @@ function findMain {
     echo "==> $file"
     file=`basename $file .tex `
     bib_file=`find . -name "*.bib"`
-    ln -s $bib_file .
+    if [[ ! -e `basename $bib_file` ]]; then
+        ln -s $bib_file .
+    fi
 }
 
 function findUpToDate {
