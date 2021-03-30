@@ -47,8 +47,8 @@ function findUpToDate {
         fi
     done
     
-    if [[ $file.${suffix[2]} -ot $file.${suffix[4]} ]]; then 
-        echo "No changes to $file.${suffix[2]}."
+    if [[ ${bib_file} -ot $file.${suffix[4]} ]]; then 
+        echo "No changes to ${bib_file}."
     else
         changes=$(($changes + 1))
         rm ${file}.${suffix}[4]
@@ -68,10 +68,10 @@ function makeBib {
     if ([ `grep -c --exclude=*.sh "LaTeX Warning: There were undefined references." $file.${suffix[1]}` > 0 ] || [ -e $file.${suffix[2]} ]) ; then
         if [[ `grep -c --exclude=*.sh "biber" $file.${suffix[0]}`> 0 ]]; then
             biber $file
-            pdflatex $directory/$file.${suffix[0]}
         else
-            bibtex $bib_file
+            bibtex $file.${suffix[4]}
         fi
+        pdflatex $directory/$file.${suffix[0]}
         pdflatex $directory/$file.${suffix[0]}
     fi
     if ([ `grep -c --exclude=*.sh "LaTeX Warning: Label(s) may have changed." $file.${suffix[1]}` -gt 0 ]); then
