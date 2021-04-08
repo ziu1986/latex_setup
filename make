@@ -264,9 +264,11 @@ clear_suff=( acn acr alg aux bbl bcf blg glg glo gls glsdefs ist run.xml out log
 directory=`pwd`
 options=( "open" "clean" "check" "pic" "compress" "copy" "review")
 
+# in any case
+findMain
+
 case ${1} in
     "")
-        findMain
         makePic
         findUpToDate $updatedPics
         pdflatex -halt-on-error $directory/$file.${suffix[0]}
