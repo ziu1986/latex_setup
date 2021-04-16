@@ -24,9 +24,11 @@ function findMain {
      fi
     echo "==> $file"
     file=`basename $file .tex `
-    bib_file=`find . -name "*.bib"`
-    if [[ ! -e `basename $bib_file` ]]; then
-        ln -s $bib_file .
+    # Find name of bib file used in main document
+    bib_file="`grep -oP '.*\K(?<={)\w+(?=.bib})' $file.${suffix[0]}`.bib"
+    bib_dir=`find . -name ${bib_file} | head -1`
+    if [[ ! -e $bib_file ]]; then
+        ln -s $bib_dir $bib_file
     fi
 }
 
