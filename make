@@ -203,7 +203,7 @@ function compress {
     fi
 }
 
-function gitdiff {
+function makeGitdiff {
     echo "Give git tag to compare the current version to."
     read gittag
     latexdiff-git -r $gittag $file.${suffix[0]}
@@ -271,7 +271,7 @@ suffix=( tex log bib pdf aux )
 pic_suff=( pdf jpg jpeg png bmp tiff pnm )
 clear_suff=( acn acr alg aux bbl bcf blg glg glo gls glsdefs ist run.xml out log toc )
 directory=`pwd`
-options=( "open" "clean" "check" "pic" "compress" "copy" "review")
+options=( "open" "clean" "check" "pic" "compress" "copy" "review" "gitdiff")
 
 # in any case
 findMain
@@ -316,6 +316,10 @@ case ${1} in
         ;;
     ${options[6]})
         makeReview
+        exit
+        ;;
+    ${options[7]})
+        makeGitdiff
         exit
         ;;
     *)
