@@ -203,6 +203,13 @@ function compress {
     fi
 }
 
+function gitdiff {
+    echo "Give git tag to compare the current version to."
+    read gittag
+    latexdiff-git -r $gittag $file.${suffix[0]}
+    echo "run ./make on $file-diff$gittag.${suffix[0]} to compile result"
+}
+
 function getWarnings {
     WARNINGS=`grep -c "[W/w]arning" $file.${suffix[1]}`
     echo "++++"
