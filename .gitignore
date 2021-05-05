@@ -1,0 +1,25 @@
+# Generally ignore compilation files from latex
+**.aux
+**.bbl
+**.blg
+**.out
+**.log
+**.toc
+**.bcf
+**.run.xml
+**.acn
+**.acr
+**.alg
+**.glg
+**.glo
+**.gls
+**.glsdefs
+**.ist
+**.sh
+0
+/*.pdf
+# Ignore all "picture" subdirectories in Papers
+/pictures/**
+# Ignore the comments subdirectory
+/comments/**
+

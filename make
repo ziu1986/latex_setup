@@ -1,9 +1,15 @@
 #!/bin/bash
+# Script to compile latex documents which has to be seperated in one main document and dependend sections in different files.
+# Figures are expected in a directory pictures_src.
+# Original graphics in vector formates will be converted into pdf and moved to pictures directory.
+# Graphics in pdf or bitmap formats will be linked into a directory pictures.
+# The compiled document will automatically opened with okular if installed.
+# There is also an option to compress the file.
 # Function declarations
 function findMain {
      if([ ! $file ]); then
         if([ ! ${1} ]); then
-            echo "Provide base file name."
+            echo "Provide base file name or press ENTER."
             read file
             echo $file
             if [[ -z ${file} ]]; then
@@ -18,7 +24,12 @@ function findMain {
      fi
     echo "==> $file"
     file=`basename $file .tex `
-    bib_file=`find . -name *.bib`
+    # Find name of bib file used in main document
+    bib_file="`grep -oP '.*\K(?<={)\w+(?=.bib})' $file.${suffix[0]}`.bib"
+    bib_dir=`find . -name ${bib_file} | head -1`
+    if [[ ! -e $bib_file ]]; then
+        ln -s $bib_dir $bib_file
+    fi
 }
 
 function findUpToDate {
@@ -38,8 +49,8 @@ function findUpToDate {
         fi
     done
     
-    if [[ $file.${suffix[2]} -ot $file.${suffix[4]} ]]; then 
-        echo "No changes to $file.${suffix[2]}."
+    if [[ ${bib_file} -ot $file.${suffix[4]} ]]; then 
+        echo "No changes to ${bib_file}."
     else
         changes=$(($changes + 1))
         rm ${file}.${suffix}[4]
@@ -55,13 +66,27 @@ function findUpToDate {
 }
 
 function makeBib {
-    if ([ `grep -c --exclude=*.sh "LaTeX Warning: There were undefined references." $file.${suffix[1]}` -gt 0 ] || [ -e $file.${suffix[2]} ]) ; then
-        bibtex $file.${suffix[4]}
+    
+    if ([ `grep -c --exclude=*.sh "LaTeX Warning: There were undefined references." $file.${suffix[1]}` > 0 ] || [ -e $file.${suffix[2]} ]) ; then
+        if [[ `grep -c --exclude=*.sh "biber" $file.${suffix[0]}`> 0 ]]; then
+            biber $file
+        else
+            bibtex $file.${suffix[4]}
+        fi
         pdflatex $directory/$file.${suffix[0]}
-        #pdflatex $directory/$file.${suffix[0]}
+        pdflatex $directory/$file.${suffix[0]}
     fi
     if ([ `grep -c --exclude=*.sh "LaTeX Warning: Label(s) may have changed." $file.${suffix[1]}` -gt 0 ]); then
+        
         pdflatex $directory/$file.${suffix[0]}
+       
+    fi
+}
+
+function makeGlossaries {
+    if [[ `grep -c --exclude=*.sh "glossaries" $file.${suffix[0]}`> 0 ]]; then
+            makeglossaries $file
+            pdflatex $directory/$file.${suffix[0]}
     fi
 }
 
@@ -178,6 +203,13 @@ function compress {
     fi
 }
 
+function makeGitdiff {
+    echo "Give git tag to compare the current version to."
+    read gittag
+    latexdiff-git -r $gittag $file.${suffix[0]}
+    echo "run ./make on $file-diff$gittag.${suffix[0]} to compile result"
+}
+
 function getWarnings {
     WARNINGS=`grep -c "[W/w]arning" $file.${suffix[1]}`
     echo "++++"
@@ -232,20 +264,24 @@ function makeReview {
     pdfseparate -f 1 -l 1 ${file}.${suffix[3]} ${file}_abstract.${suffix[3]}
     zip figures -xi fig*
 }
-###Script###
+
+### MAIN ###
 
 suffix=( tex log bib pdf aux )
 pic_suff=( pdf jpg jpeg png bmp tiff pnm )
-clear_suff=( aux bbl blg out log pdf toc )
+clear_suff=( acn acr alg aux bbl bcf blg glg glo gls glsdefs ist run.xml out log toc )
 directory=`pwd`
-options=( "open" "clean" "check" "pic" "compress" "copy" "review")
+options=( "open" "clean" "check" "pic" "compress" "copy" "review" "gitdiff")
+
+# in any case
+findMain
 
 case ${1} in
     "")
-        findMain
         makePic
         findUpToDate $updatedPics
         pdflatex -halt-on-error $directory/$file.${suffix[0]}
+        makeGlossaries
         makeBib
         makeLineno
         getWarnings
@@ -280,6 +316,10 @@ case ${1} in
         ;;
     ${options[6]})
         makeReview
+        exit
+        ;;
+    ${options[7]})
+        makeGitdiff
         exit
         ;;
     *)
