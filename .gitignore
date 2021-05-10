@@ -16,6 +16,9 @@
 **.glsdefs
 **.ist
 **.sh
+**.fdb_latexmk
+**.fls
+**.synctex.gz
 0
 /*.pdf
 # Ignore all "picture" subdirectories in Papers
