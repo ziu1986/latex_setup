@@ -67,8 +67,8 @@ function findUpToDate {
 
 function makeBib {
     
-    if ([ `grep -c --exclude=*.sh "LaTeX Warning: There were undefined references." $file.${suffix[1]}` > 0 ] || [ -e $file.${suffix[2]} ]) ; then
-        if [[ `grep -c --exclude=*.sh "biber" $file.${suffix[0]}`> 0 ]]; then
+    if ([ `grep -c --exclude=*.sh "LaTeX Warning: There were undefined references." $file.${suffix[1]}` -gt 0 ] || [ -e $file.${suffix[2]} ]) ; then
+        if [[ `grep -c --exclude=*.sh "biber" $file.${suffix[0]}` -gt 0 ]]; then
             biber $file
         else
             bibtex $file.${suffix[4]}
