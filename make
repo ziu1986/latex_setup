@@ -84,7 +84,7 @@ function makeBib {
 }
 
 function makeGlossaries {
-    if [[ `grep -c --exclude=*.sh "glossaries" $file.${suffix[0]}`> 0 ]]; then
+    if [[ `grep -c --exclude=*.sh "glossaries" $file.${suffix[0]}` -gt 0 ]]; then
             makeglossaries $file
             pdflatex $directory/$file.${suffix[0]}
     fi
