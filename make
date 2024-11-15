@@ -53,7 +53,7 @@ function findUpToDate {
         echo "No changes to ${bib_file}."
     else
         changes=$(($changes + 1))
-        rm ${file}.${suffix}[4]
+        rm ${file}.${suffix[4]}
     fi
     if [[ $changes -eq 0 ]]; then
         echo "Nothing to do."
@@ -68,6 +68,7 @@ function findUpToDate {
 function makeBib {
     
     if ([ `grep -c --exclude=*.sh "LaTeX Warning: There were undefined references." $file.${suffix[1]}` -gt 0 ] || [ -e $file.${suffix[2]} ]) ; then
+        
         if [[ `grep -c --exclude=*.sh "biber" $file.${suffix[0]}` -gt 0 ]]; then
             biber $file
         else
