@@ -174,13 +174,20 @@ function makeClean {
 function openPdf {
     if [ `grep -c "Output written on." $file.${suffix[1]}` -eq 0 ]; then
         echo "Exit."
-        #exit
-    elif [ ! -z `which okular` ] && [ `ps -e | grep -c okular` -eq 0 ]; then
-        okular $file.${suffix[3]} 
-    elif [ ! -z `which evince` ] && [ `ps -e | grep -c evince` -eq 0 ]; then
-        evince $file.${suffix[3]} 
+        exit 0
+    fi
+    if [ ! -z `which okular` ]; then 
+        if [ `ps -e | grep -c okular` -eq 0 ]; then
+            okular $file.${suffix[3]} &
+        else
+            echo "$file.${suffix[3]} is already running."
+        fi
     else
-        echo "$file.${suffix[3]} is already running."
+        if [ `ps -e | grep -c evince` -eq 0 ]; then
+            evince $file.${suffix[3]} &
+        else
+            echo "$file.${suffix[3]} is already running."
+        fi
     fi
 }
 
